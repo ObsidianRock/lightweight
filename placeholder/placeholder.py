@@ -1,20 +1,14 @@
 
 import sys
 import hashlib
+import os
 
 from io import BytesIO
 from PIL import Image, ImageDraw
 
 from django.conf import settings
-from django.core.cache import cache
-from django.conf.urls import url
-from django.core.management import execute_from_command_line
-from django.core.wsgi import get_wsgi_application
 
-from django.forms import Form, IntegerField
-
-from django.http import HttpResponse, HttpResponseBadRequest
-from django.views.decorators.http import etag
+BASE_DIR = os.path.dirname(__file__)
 
 settings.configure(
     DEBUG=True,
@@ -25,7 +19,28 @@ settings.configure(
         'django.middleware.csrf.CsrfViewMiddleware',
         'django.middleware.clickjacking.XFrameOptionsMiddleware',
     ),
+    INSTALLED_APPS=(
+        'django.contrib.staticfiles',
+    ),
+    TEMPLATE_DIRS=(
+        os.path.join(BASE_DIR, 'templates'),
+    ),
+    STATICFILES_DIRS=(
+        os.path.join(BASE_DIR, 'static'),
+    ),
+    STATIC_URL='/static/',
+
 )
+
+from django.core.cache import cache   # this had to come after the setting
+                                      # as it was trying access setting before it was set
+from django.conf.urls import url
+from django.forms import Form, IntegerField
+from django.core.urlresolvers import reverse
+from django.core.wsgi import get_wsgi_application
+from django.http import HttpResponse, HttpResponseBadRequest
+from django.shortcuts import render
+from django.views.decorators.http import etag
 
 
 class ImageForm(Form):
@@ -42,7 +57,7 @@ class ImageForm(Form):
         content = cache.get(key)
         if content is None:
             image = Image.new('RGB', (width, height))
-            draw = ImageDraw.draw(image)
+            draw = ImageDraw.Draw(image)
             text = '{} X {}'.format(width, height)
             text_width, text_height = draw.textsize(text)
             if text_width < width and text_height < height:
@@ -75,7 +90,11 @@ def placeholder(request, width, height):
 
 
 def index(request):
-    return HttpResponse('Hello World')
+    example = reverse('placeholder', kwargs={'width': 50, 'height': 50})
+    context = {
+        'example': request.build_absolute_uri(example)
+    }
+    return render(request, 'home.html', context)
 
 
 urlpatterns = (
@@ -89,6 +108,8 @@ application = get_wsgi_application()
 
 
 if __name__ == "__main__":
+    os.environ.setdefault("DJANGO_SETTINGS_MODULE", "placeholder.settings")
+    from django.core.management import execute_from_command_line
 
     execute_from_command_line(sys.argv)
 
