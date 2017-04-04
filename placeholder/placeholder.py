@@ -1,6 +1,9 @@
 
 import sys
 
+from io import BytesIO
+from PIL import image
+
 
 from django.conf import settings
 from django.conf.urls import url
@@ -29,15 +32,25 @@ class ImageForm(Form):
     width = IntegerField(min_value=1, max_value=2000)
 
 
+    def generate(self, image_format='PNG'):
+
+        height = self.cleaned_data['height']
+        width = self.cleaned_data['width']
+
+        image = Image.new('RGB', (width, height))
+        content = BytesIO()
+        image.save(content, image_format)
+        content.seek(0)
+        return content
+
+
 def placeholder(request, width, height):
 
     form = ImageForm({'height': height, 'width': width})
 
     if form.is_valid():
-        height = form.cleaned_data['height']
-        width = form.cleaned_data['width']
-
-        return HttpResponse('OK')
+        image = form.generate()
+        return HttpResponse(image, content_type='image/png')
     else:
         return HttpResponseBadRequest('Invalid image request')
 
