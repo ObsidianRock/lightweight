@@ -5,6 +5,7 @@ from io import BytesIO
 from PIL import Image, ImageDraw
 
 from django.conf import settings
+from django.core.cache import cache
 from django.conf.urls import url
 from django.core.management import execute_from_command_line
 from django.core.wsgi import get_wsgi_application
@@ -30,26 +31,28 @@ class ImageForm(Form):
     height = IntegerField(min_value=1, max_value=2000)
     width = IntegerField(min_value=1, max_value=2000)
 
-
     def generate(self, image_format='PNG'):
 
         height = self.cleaned_data['height']
         width = self.cleaned_data['width']
 
-        image = Image.new('RGB', (width, height))
-
-        draw = ImageDraw.draw(image)
-        text = '{} X {}'.format(width, height)
-        text_width, text_height = draw.textsize(text)
-        if text_width < width and text_height < height:
-            text_top = (height - text_height) // 2
-            text_left = (width - text_width) // 2
-            draw.text((text_left, text_top), text, fill=(255, 255, 255))
-        content = BytesIO()
-        image.save(content, image_format)
-        content.seek(0)
+        key = '{}.{}.{}'.format(width, height, image_format)
+        content = cache.get(key)
+        if content is None:
+            image = Image.new('RGB', (width, height))
+            draw = ImageDraw.draw(image)
+            text = '{} X {}'.format(width, height)
+            text_width, text_height = draw.textsize(text)
+            if text_width < width and text_height < height:
+                text_top = (height - text_height) // 2
+                text_left = (width - text_width) // 2
+                draw.text((text_left, text_top), text, fill=(255, 255, 255))
+            content = BytesIO()
+            image.save(content, image_format)
+            content.seek(0)
+            cache.set(key, content, 60 * 60)  
+            return content
         return content
-
 
 def placeholder(request, width, height):
 
