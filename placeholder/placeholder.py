@@ -1,13 +1,15 @@
 
 import sys
 
+
 from django.conf import settings
 from django.conf.urls import url
 from django.core.management import execute_from_command_line
 from django.core.wsgi import get_wsgi_application
 
+from django.forms import Form, IntegerField
 
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseBadRequest
 
 settings.configure(
     DEBUG=True,
@@ -21,9 +23,23 @@ settings.configure(
 )
 
 
+class ImageForm(Form):
+
+    height = IntegerField(min_value=1, max_value=2000)
+    width = IntegerField(min_value=1, max_value=2000)
+
+
 def placeholder(request, width, height):
 
-    return HttpResponse('OK')
+    form = ImageForm({'height': height, 'width': width})
+
+    if form.is_valid():
+        height = form.cleaned_data['height']
+        width = form.cleaned_data['width']
+
+        return HttpResponse('OK')
+    else:
+        return HttpResponseBadRequest('Invalid image request')
 
 
 def index(request):
