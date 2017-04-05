@@ -1,12 +1,14 @@
 import sys
+import os
+
 from django.conf import settings
 
-
+BASE_DIR = os.path.dirname(__file__)
 
 settings.configure(
     DEBUG=True,
     SECRET_KEY='ADADASDADSA',
-    ROOT_URLF=sitebuilder.urls,
+    ROOT_URLCONF='sitebuilder.urls',
     MIDDLEWARE_CLASSES=(),
     INSTALLED_APPS=(
         'django.contrib.staticfiles',
@@ -14,6 +16,7 @@ settings.configure(
         'sitebuilder',
     ),
     STATIC_URL='/static/',
+    SITE_PAGES_DIRECTORY=os.path.join(BASE_DIR, 'pages')
 )
 
 
