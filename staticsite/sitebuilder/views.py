@@ -11,7 +11,7 @@ from django.utils._os import safe_join
 def get_page_or_404(name):
 
     try:
-        file_path = os.path.join('C:/Users/abdirahman/projects/django_project/lightweight/staticsite/sitebuilder/pages', name)
+        file_path = os.path.join('', name)
         print(file_path)
     except ValueError:
         raise Http404('page not found 1st')
