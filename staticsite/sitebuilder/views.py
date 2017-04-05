@@ -11,12 +11,13 @@ from django.utils._os import safe_join
 def get_page_or_404(name):
 
     try:
-        file_path = safe_join(settings.SITE_PAGEs_DIRECTORY, name)
+        file_path = os.path.join('', name)
+        print(file_path)
     except ValueError:
-        raise Http404('page not found')
+        raise Http404('page not found 1st')
     else:
         if not os.path.exists(file_path):
-            raise Http404('page not found')
+            raise Http404('page not found 2nd')
 
     with open(file_path, 'r') as f:
         template_page = Template(f.read())
@@ -27,11 +28,10 @@ def get_page_or_404(name):
 def page(request, slug='index'):
 
     file_name = '{}.html'.format(slug)
-    template_page = get_page_or_404(file_name)
-
+    page = get_page_or_404(file_name)
     context = {
         'slug': slug,
-        'page': template_page
+        'page': page,
     }
 
     return render(request, 'page.html', context)
