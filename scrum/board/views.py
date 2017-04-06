@@ -25,13 +25,13 @@ class DefaultMixin:
 
 class SprintViewSet(DefaultMixin, viewsets.ModelViewSet):
 
-    queryset = Sprint.Object.order_by('end')
+    queryset = Sprint.objects.order_by('end')
     serializer_class = SprintSerializer
 
 
 class TaskViewSet(DefaultMixin, viewsets.ModelViewSet):
 
-    queryset = Task.Objects.all()
+    queryset = Task.objects.all()
     serializer_class = TaskSerializer
 
 
@@ -40,5 +40,5 @@ class UserViewSets(DefaultMixin, viewsets.ModelViewSet):
     lookup_field = User.USERNAME_FIELD
     lookup_url_kwarg = User.USERNAME_FIELD
 
-    queryset = User.Objects.order_by(User.USERNAME_FIELD)
+    queryset = User.objects.order_by(User.USERNAME_FIELD)
     serializer_class = UserSerializer
