@@ -1,8 +1,11 @@
-from django.shortcuts import render
+from django.contrib.auth import get_user_model
 
 from rest_framework import viewsets, authentication, permissions
-from .models import Sprint
-from .serializers import SprintSerializer
+from .models import Sprint, Task
+
+from .serializers import SprintSerializer, TaskSerializer, UserSerializer
+
+User = get_user_model()
 
 
 class DefaultMixin:
@@ -26,3 +29,16 @@ class SprintViewSet(DefaultMixin, viewsets.ModelViewSet):
     serializer_class = SprintSerializer
 
 
+class TaskViewSet(DefaultMixin, viewsets.ModelViewSet):
+
+    queryset = Task.Objects.all()
+    serializer_class = TaskSerializer
+
+
+class UserViewSets(DefaultMixin, viewsets.ModelViewSet):
+
+    lookup_field = User.USERNAME_FIELD
+    lookup_url_kwarg = User.USERNAME_FIELD
+
+    queryset = User.Objects.order_by(User.USERNAME_FIELD)
+    serializer_class = UserSerializer
