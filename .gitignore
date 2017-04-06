@@ -5,3 +5,5 @@ project_name
 
 *.pyc
 __pycache__
+
+scrum/scrum/settings.py
