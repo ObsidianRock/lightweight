@@ -23,6 +23,9 @@ class UserSerializer(serializers.ModelSerializer):
             'self': reverse('user-detail',
                             kwargs={User.USERNAME_FIELD: username},
                             request=request),
+            'tasks': '{}?assigned={}'.format(
+                reverse('task-list', request=request), username)
+
         }
 
     class Meta:
@@ -39,7 +42,9 @@ class SprintSerializer(serializers.ModelSerializer):
         return {
             'self': reverse('sprint-detail',
                             kwargs={'pk': obj.pk},
-                            request=request)
+                            request=request),
+            'tasks': reverse('task-list',
+                             request=request) + '?sprint={}'.format(obj.pk),
         }
 
     class Meta:

@@ -6,6 +6,8 @@ from .models import Sprint, Task
 
 from .serializers import SprintSerializer, TaskSerializer, UserSerializer
 
+from .forms import TaskFilter, SprintFilter
+
 User = get_user_model()
 
 
@@ -34,6 +36,7 @@ class SprintViewSet(DefaultMixin, viewsets.ModelViewSet):
     serializer_class = SprintSerializer
     search_fields = ('name', )
     ordering_fields = ('end', 'name',)
+    filter_class = SprintFilter
 
 
 class TaskViewSet(DefaultMixin, viewsets.ModelViewSet):
@@ -42,6 +45,8 @@ class TaskViewSet(DefaultMixin, viewsets.ModelViewSet):
     serializer_class = TaskSerializer
     search_fields = ('name', 'description',)
     ordering_fields = ('name', 'order', 'started', 'due', 'completed',)
+    filter_class = TaskFilter
+
 
 class UserViewSets(DefaultMixin, viewsets.ModelViewSet):
 
