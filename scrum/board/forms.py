@@ -21,8 +21,8 @@ class TaskFilter(django_filters.FilterSet):
 
     backlog = NullFilter(name='sprint')
 
-    def __init__(self, *arg, **kwargs):
-        super().__init__(*arg, **kwargs)
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
         self.filters['assigned'].extra.update(
             {'to_field_name': User.USERNAME_FIELD})
 
@@ -33,8 +33,8 @@ class TaskFilter(django_filters.FilterSet):
 
 class SprintFilter(django_filters.FilterSet):
 
-    end_min = django_filters.DateFilter(name='end', lookup_type='gte')
-    end_max = django_filters.DateFilter(name='end', lookup_type='lte')
+    end_min = django_filters.DateFilter(name='end')
+    end_max = django_filters.DateFilter(name='end')
 
     class Meta:
         model = Sprint

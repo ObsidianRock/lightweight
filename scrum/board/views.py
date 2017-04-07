@@ -30,13 +30,14 @@ class DefaultMixin:
         filters.OrderingFilter
     )
 
+
 class SprintViewSet(DefaultMixin, viewsets.ModelViewSet):
 
     queryset = Sprint.objects.order_by('end')
     serializer_class = SprintSerializer
+    filter_class = SprintFilter
     search_fields = ('name', )
     ordering_fields = ('end', 'name',)
-    filter_class = SprintFilter
 
 
 class TaskViewSet(DefaultMixin, viewsets.ModelViewSet):
